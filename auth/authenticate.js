@@ -7,6 +7,7 @@ const jwtKey =
 // quickly see what this file exports
 module.exports = {
   authenticate,
+  generateToken,
 };
 
 // implementation details
@@ -27,3 +28,16 @@ function authenticate(req, res, next) {
     });
   }
 }
+
+
+//token creation:
+function generateToken(token){
+  const payload = {
+    username: token.username,
+  }
+  const options = {
+    expiresIn: '1h',
+    jwtid: '1234',
+  }
+  return jwtToken = jwt.sign(payload, jwtKey, options);
+};

@@ -1,6 +1,8 @@
 const axios = require('axios');
+const bcryptjs = require('bcryptjs');
 
 const { authenticate } = require('../auth/authenticate');
+const { generateToken } = require('../auth/authenticate');
 const knex = require('../database/dbConfig.js');
 
 module.exports = server => {
@@ -11,14 +13,16 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  req.body.password = bcryptjs.hashSync(req.body.password, 16);
   knex('users').insert(req.body)
     .then(response => {
-      console.log(response);
-      res.status(201).json({message: `Registration complete! Welcome ${req.body.username}!`})
+      const yourJwtToken = generateToken(req.body);
+      res.status(201).json({message: `Registration complete! Welcome ${req.body.username}! Your JWT is ${yourJwtToken}. ALWAYS REMEMBER TO PLUG IN YOUR JWT IN THE HEADER!`})
+      console.log('success!', response);
     })
     .catch(err => {
-      console.log(error);
       res.status(400).json({error: 'unable to create account. please try again.'})
+      console.log(err);
     })
 }
 
