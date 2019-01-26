@@ -28,7 +28,21 @@ function register(req, res) {
 
 function login(req, res) {
   // implement user login
-}
+  knex('users').where('username', req.body.username)
+    .then(response => {
+      if((req.body.username === response[0].username) && bcryptjs.compareSync(req.body.password, response[0].password)) {
+        const yourJwtToken = generateToken(req.body);
+        res.status(200).json({message: `Login Successful! Welcome ${req.body.username}! Your JWT is ${yourJwtToken}. ALWAYS REMEMBER TO PLUG IN YOUR JWT IN THE HEADER! `})
+        console.log('success', response);
+      } else {
+        res.status(404).json({error: `invalid username OR password. please try again.`})
+      }
+    })
+    .catch(err => {
+      res.status(500).json({error: 'Sorry but we were unable to process your login. Please try again.'});
+      console.log(err);
+    })
+};
 
 function getJokes(req, res) {
   const requestOptions = {
