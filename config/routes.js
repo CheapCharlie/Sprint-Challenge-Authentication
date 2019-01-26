@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const { authenticate } = require('../auth/authenticate');
+const knex = require('../database/dbConfig.js');
 
 module.exports = server => {
   server.post('/api/register', register);
@@ -10,6 +11,15 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  knex('users').insert(req.body)
+    .then(response => {
+      console.log(response);
+      res.status(201).json({message: `Registration complete! Welcome ${req.body.username}!`})
+    })
+    .catch(err => {
+      console.log(error);
+      res.status(400).json({error: 'unable to create account. please try again.'})
+    })
 }
 
 function login(req, res) {
